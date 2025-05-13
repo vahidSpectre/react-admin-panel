@@ -1,0 +1,27 @@
+.divider-wrapper {
+ display: flex !important;
+ flex-wrap: wrap !important;
+ align-items: center !important;
+ padding: 0.4rem 3.5rem 0rem 0rem !important;
+}
+.sidebar-divider {
+ position: relative;
+ font-size: 12px;
+ display: flex;
+ align-items: center;
+}
+
+.sidebar-divider span {
+ padding: 0 5px;
+}
+
+.sidebar-divide-line {
+ flex: 1 1 auto;
+ height: 1px;
+ background-color: #8d8d8d;
+ margin-left: 40px;
+}
+
+#sidebar-menu ul li ul.sub-menu li a {
+ padding: 0.2rem 4.5rem 0.4rem 1.5rem !important;
+}

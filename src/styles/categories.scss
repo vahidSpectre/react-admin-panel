@@ -1,0 +1,14 @@
+.categories {
+}
+.category-main-container {
+ .btn {
+  display: flex;
+  flex-direction: row-reverse;
+
+  i {
+   width: 20px;
+   height: 20px;
+   color: #fff;
+  }
+ }
+}
