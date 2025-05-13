@@ -305,7 +305,7 @@ export const onAddCommentFail = error => ({
  payload: error,
 });
 
-export const getCategories = () => ({ type: GET_CATEGORIES });
+export const onGetCategoriesSuccess = () => ({ type: GET_CATEGORIES, payload: data });
 
 export const addCategory = data => ({ type: ADD_CATEGORY, payload: data });
 

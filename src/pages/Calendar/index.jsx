@@ -26,7 +26,7 @@ import Breadcrumbs from "/src/components/Common/Breadcrumb";
 import {
   addNewEvent as onAddNewEvent,
   deleteEvent as onDeleteEvent,
-  getCategories as onGetCategories,
+  // getCategories as onGetCategories,
   getEvents as onGetEvents,
   updateEvent as onUpdateEvent,
 } from "../../store/actions";

@@ -3,7 +3,7 @@ import MockAdapter from "axios-mock-adapter";
 import * as url from "../url_helper";
 import accessToken from "../jwt-token-access/accessToken";
 import {
-  calenderDefaultCategories,
+  // calenderDefaultCategories,
   cartData,
   chats,
   comments,
@@ -546,18 +546,18 @@ const fakeBackend = () => {
     });
   });
 
-  mock.onGet(url.GET_CATEGORIES).reply(() => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (calenderDefaultCategories) {
-          // Passing fake JSON data as response
-          resolve([200, calenderDefaultCategories]);
-        } else {
-          reject([400, "نمی توان دسته ها را دریافت کرد"]);
-        }
-      });
-    });
-  });
+  // mock.onGet(url.GET_CATEGORIES).reply(() => {
+  //   return new Promise((resolve, reject) => {
+  //     setTimeout(() => {
+  //       if (calenderDefaultCategories) {
+  //         // Passing fake JSON data as response
+  //         resolve([200, calenderDefaultCategories]);
+  //       } else {
+  //         reject([400, "نمی توان دسته ها را دریافت کرد"]);
+  //       }
+  //     });
+  //   });
+  // });
 
   mock.onGet(url.GET_CHATS).reply(() => {
     return new Promise((resolve, reject) => {

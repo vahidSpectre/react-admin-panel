@@ -64,6 +64,7 @@ import {
  onAddReplyFail,
  onAddCommentSuccess,
  onAddCommentFail,
+ onGetCategoriesSuccess,
 } from './actions';
 
 //Include Both Helper File with needed methods
@@ -264,7 +265,7 @@ function* onAddComment({ payload: { productId, commentText } }) {
 function* fetchCategories() {
  try {
   const response = yield call(getCategories);
-  yield put({ type: GET_CATEGORIES_SUCCESS, payload: response });
+  yield put(onGetCategoriesSuccess(response));
  } catch (error) {
   yield put({ type: CATEGORY_ERROR, payload: error.message });
  }
