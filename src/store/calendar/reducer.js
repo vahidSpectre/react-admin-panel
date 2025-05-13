@@ -7,13 +7,10 @@ import {
   UPDATE_EVENT_FAIL,
   DELETE_EVENT_SUCCESS,
   DELETE_EVENT_FAIL,
-  GET_CATEGORIES_SUCCESS,
-  GET_CATEGORIES_FAIL,
 } from "./actionTypes";
 
 const INIT_STATE = {
   events: [],
-  categories: [],
   error: {},
 };
 
@@ -68,18 +65,6 @@ const Calendar = (state = INIT_STATE, action) => {
       };
 
     case DELETE_EVENT_FAIL:
-      return {
-        ...state,
-        error: action.payload,
-      };
-
-    case GET_CATEGORIES_SUCCESS:
-      return {
-        ...state,
-        categories: action.payload,
-      };
-
-    case GET_CATEGORIES_FAIL:
       return {
         ...state,
         error: action.payload,

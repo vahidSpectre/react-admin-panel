@@ -23,12 +23,23 @@ import { createCategory } from '../../services/categories.api';
 import OptionalSizes from '../Ui/UiModal/OptionalSizes';
 import Dropzone from 'react-dropzone';
 import '../../styles/categories.scss';
+import { GET_CATEGORIES } from '../../store/e-commerce/actionTypes';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 const EcommerenceAddCategory = () => {
- const [createCategoryModalOpen, setCreateCategoryModalOpen] = useState(true);
+ const [createCategoryModalOpen, setCreateCategoryModalOpen] = useState(false);
  const [selectedFiles, setSelectedFiles] = useState([]);
 
+ const { categories, error } = useSelector(state => state.ecommerce);
+
+ useEffect(() => {
+  console.log(categories);
+ }, [categories]);
+
+ const dispatch = useDispatch();
+
  //meta title
- document.title = 'Add Product | Skote - قالب مدیریتی و داشبورد Vite React ';
+ document.title = 'دسته بندی ها ';
 
  const options = [
   { value: 'AK', label: 'تهران' },
@@ -109,8 +120,8 @@ const EcommerenceAddCategory = () => {
  }
 
  useEffect(() => {
-  console.log(selectedFiles);
- }, [selectedFiles]);
+  dispatch({ type: GET_CATEGORIES });
+ }, []);
 
  return (
   <React.Fragment>
@@ -127,20 +138,98 @@ const EcommerenceAddCategory = () => {
           color='primary'
           onClick={() => setCreateCategoryModalOpen(true)}>
           <i
-           className='bxr bx-plus-square text-white'
-           style={{ color: '#fff' }}></i>
-          <span> ایجاد دسته‌بندی</span>
+           className='bxr bx-plus-square'
+           style={{ color: '#fff !important' }}></i>
+          <span>ایجاد دسته‌بندی</span>
          </Button>
         </Col>
         <Col sm='6'>
-         <Button
-          type='submit'
-          color='primary'
-          onClick={() => setCreateCategoryModalOpen(true)}>
-          واحد های اندازه گیری
+         <Button type='submit' color='primary'>
+          <i
+           className='bxr bx-plus-square'
+           style={{ color: '#fff !important' }}></i>
+          <span>واحد های اندازه گیری</span>
          </Button>
         </Col>
        </Row>
+      </Col>
+     </Row>
+     <Row>
+      <Col className='col-12'>
+       <Card>
+        <CardBody>
+         <CardTitle className='h4'>دسته‌بندی ها</CardTitle>
+         <div className='table-responsive'>
+          <table className='table table-bordered table-striped table-nowrap mb-0'>
+           <thead>
+            <tr>
+             <th scope='col'>ردیف</th>
+             <th scope='col' className='text-center'>
+              نام
+             </th>
+             <th scope='col' className='text-center'>
+              اولویت
+             </th>
+             <th scope='col' className='text-center'>
+              آیکن
+             </th>
+             <th scope='col' className='text-center'>
+              بنر
+             </th>
+             <th scope='col' className='text-center'>
+              تصویر منو
+             </th>
+             <th scope='col' className='text-center'>
+              والد
+             </th>
+             <th scope='col' className='text-center'>
+              وضعیت
+             </th>
+             <th scope='col' className='text-center'>
+              نمایش در صفحه اصلی
+             </th>
+             <th scope='col' className='text-center'>
+              تعرفه های ارسال با پیک فروشگاه
+             </th>
+             <th scope='col' className='text-center'>
+              تنظیمات ارسال
+             </th>
+             <th scope='col' className='text-center'>
+              فروش
+             </th>
+             <th scope='col' className='text-center'>
+              عملیات
+             </th>
+            </tr>
+           </thead>
+           <tbody>
+            {categories &&
+             categories.map((category, i) => {
+              return (
+               <tr>
+                <td className='text-nowrap' scope='row'>
+                 {i}
+                </td>
+                <td>{category.name}</td>
+                <td colSpan='1'> {}</td>
+                <td colSpan='1'> {}</td>
+                <td colSpan='1'> {}</td>
+                <td colSpan='1'> {}</td>
+                <td colSpan='1'> {}</td>
+                <td colSpan='1'> {category.is_active}</td>
+                <td colSpan='1'> {}</td>
+                <td colSpan='1'> {}</td>
+                <td colSpan='1'> {}</td>
+                <td colSpan='1'> {}</td>
+                <td colSpan='1'> {}</td>
+               </tr>
+              );
+             })}
+           </tbody>
+          </table>
+         </div>
+        </CardBody>
+       </Card>
       </Col>
      </Row>
     </Container>
@@ -287,7 +376,7 @@ const EcommerenceAddCategory = () => {
           </Row>
           <Card>
            <CardBody>
-            <CardTitle className='mb-3'>تصاویر دسته بندی</CardTitle>
+            <CardTitle className='mb-3'>تصویر دسته بندی</CardTitle>
             <Form>
              <Dropzone
               onDrop={acceptedFiles => {

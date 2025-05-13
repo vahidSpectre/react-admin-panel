@@ -4,7 +4,6 @@ import { takeEvery, put, call } from "redux-saga/effects"
 import {
   ADD_NEW_EVENT,
   DELETE_EVENT,
-  GET_CATEGORIES,
   GET_EVENTS,
   UPDATE_EVENT,
 } from "./actionTypes"
@@ -17,8 +16,6 @@ import {
   updateEventFail,
   deleteEventSuccess,
   deleteEventFail,
-  getCategoriesSuccess,
-  getCategoriesFail,
 } from "./actions"
 
 //Include Both Helper File with needed methods
@@ -80,7 +77,6 @@ function* calendarSaga() {
   yield takeEvery(ADD_NEW_EVENT, onAddNewEvent)
   yield takeEvery(UPDATE_EVENT, onUpdateEvent)
   yield takeEvery(DELETE_EVENT, onDeleteEvent)
-  yield takeEvery(GET_CATEGORIES, onGetCategories)
 }
 
 export default calendarSaga;

@@ -11,9 +11,6 @@ import {
   DELETE_EVENT,
   DELETE_EVENT_SUCCESS,
   DELETE_EVENT_FAIL,
-  GET_CATEGORIES,
-  GET_CATEGORIES_SUCCESS,
-  GET_CATEGORIES_FAIL,
 } from "./actionTypes";
 
 export const getEvents = () => ({
@@ -75,16 +72,3 @@ export const deleteEventFail = error => ({
   payload: error,
 });
 
-export const getCategories = () => ({
-  type: GET_CATEGORIES,
-});
-
-export const getCategoriesSuccess = categories => ({
-  type: GET_CATEGORIES_SUCCESS,
-  payload: categories,
-});
-
-export const getCategoriesFail = error => ({
-  type: GET_CATEGORIES_FAIL,
-  payload: error,
-});
