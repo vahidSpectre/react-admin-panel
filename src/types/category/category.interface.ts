@@ -5,4 +5,5 @@ export interface Category {
  parents: number[];
  is_active: boolean;
  unit: number;
+ display_order: number;
 }

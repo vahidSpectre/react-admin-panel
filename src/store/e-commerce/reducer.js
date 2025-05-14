@@ -227,7 +227,7 @@ const Ecommerce = (state = INIT_STATE, action) => {
     error: action.payload,
    };
 
-  case GET_CATEGORIES_SUCCESS:
+  case GET_CATEGORIES:
    return { ...state, categories: action.payload };
 
   case ADD_CATEGORY_SUCCESS:

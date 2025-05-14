@@ -35,7 +35,7 @@ export async function createCategory(data: CreateCategoryRequest) {
 export async function getCategories(
  page = 1,
 ): Promise<PaginatedCategoryResponse> {
- const res = await fetch(`${BASE_URL}/categories?page=${page}`);
+ const res = await fetch(`${BASE_URL}/categories`);
  return handleResponse(res);
 }
 

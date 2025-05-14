@@ -19,22 +19,17 @@ import Select from 'react-select';
 //Import Breadcrumb
 import Breadcrumbs from '../../components/Common/Breadcrumb';
 import { toast } from 'react-toastify';
-import { createCategory } from '../../services/categories.api';
+import { createCategory, getCategories } from '../../services/categories.api';
 import OptionalSizes from '../Ui/UiModal/OptionalSizes';
 import Dropzone from 'react-dropzone';
 import '../../styles/categories.scss';
-import { GET_CATEGORIES } from '../../store/e-commerce/actionTypes';
 import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
+
+import CategoryRow from './category/CategoryRow';
 const EcommerenceAddCategory = () => {
  const [createCategoryModalOpen, setCreateCategoryModalOpen] = useState(false);
  const [selectedFiles, setSelectedFiles] = useState([]);
-
- const { categories, error } = useSelector(state => state.ecommerce);
-
- useEffect(() => {
-  console.log(categories);
- }, [categories]);
+ const [categories, setCategories] = useState([]);
 
  const dispatch = useDispatch();
 
@@ -58,6 +53,7 @@ const EcommerenceAddCategory = () => {
    productdesc: '',
    parents: [],
    unit: 0,
+   display_order: 0,
   },
   validationSchema: yup.object().shape({
    name: yup.string().required('لطفا نام محصول خود را وارد کنید'),
@@ -66,6 +62,7 @@ const EcommerenceAddCategory = () => {
    productdesc: yup.string(),
    unit: yup.number(),
    parents: yup.array(),
+   display_order: yup.number(),
   }),
   onSubmit: async values => {
    try {
@@ -76,14 +73,16 @@ const EcommerenceAddCategory = () => {
      parents: values.parents.map(Number),
      is_active: values.is_active,
      unit: Number(values.unit || 0),
+     display_order: Number(values.display_order),
     };
 
     const res = await createCategory(payload);
 
     const message = res?.message || 'دسته‌بندی با موفقیت ایجاد شد';
     toast.success(message);
-
-    // formik.resetForm();
+    setCreateCategoryModalOpen(false);
+    fetchCategories();
+    formik.resetForm();
    } catch (error) {
     console.error('خطا در ثبت دسته‌بندی:', error);
 
@@ -119,9 +118,21 @@ const EcommerenceAddCategory = () => {
   setSelectedFiles(files);
  }
 
+ const handleGoToMusurements = () => {};
+
  useEffect(() => {
-  dispatch({ type: GET_CATEGORIES });
+  fetchCategories();
  }, []);
+ // API CALLS
+
+ const fetchCategories = async () => {
+  const categoryResponse = await getCategories();
+  setCategories(categoryResponse.data.items);
+ };
+
+ useEffect(() => {
+  console.log(categories);
+ }, [categories]);
 
  return (
   <React.Fragment>
@@ -144,7 +155,7 @@ const EcommerenceAddCategory = () => {
          </Button>
         </Col>
         <Col sm='6'>
-         <Button type='submit' color='primary'>
+         <Button type='submit' color='primary' onClick={handleGoToMusurements}>
           <i
            className='bxr bx-plus-square'
            style={{ color: '#fff !important' }}></i>
@@ -197,7 +208,7 @@ const EcommerenceAddCategory = () => {
              <th scope='col' className='text-center'>
               فروش
              </th>
-             <th scope='col' className='text-center'>
+             <th scope='col' className='text-center action-span'>
               عملیات
              </th>
             </tr>
@@ -205,25 +216,7 @@ const EcommerenceAddCategory = () => {
            <tbody>
             {categories &&
              categories.map((category, i) => {
-              return (
-               <tr>
-                <td className='text-nowrap' scope='row'>
-                 {i}
-                </td>
-                <td>{category.name}</td>
-                <td colSpan='1'> {}</td>
-                <td colSpan='1'> {}</td>
-                <td colSpan='1'> {}</td>
-                <td colSpan='1'> {}</td>
-                <td colSpan='1'> {}</td>
-                <td colSpan='1'> {category.is_active}</td>
-                <td colSpan='1'> {}</td>
-                <td colSpan='1'> {}</td>
-                <td colSpan='1'> {}</td>
-                <td colSpan='1'> {}</td>
-                <td colSpan='1'> {}</td>
-               </tr>
-              );
+              return <CategoryRow category={category} index={i} />;
              })}
            </tbody>
           </table>
@@ -332,20 +325,49 @@ const EcommerenceAddCategory = () => {
             </div>
            </Col>
           </Row>
-          <div className='mb-3'>
-           <Label htmlFor='is-active'>فعال</Label>
-           &nbsp;
-           <Input
-            id='is_active'
-            name='is_active'
-            type='checkbox'
-            checked={formik.values.is_active}
-            onChange={e => formik.setFieldValue('is_active', e.target.checked)}
-           />
-           {formik.errors.price && formik.touched.price ? (
-            <FormFeedback type='invalid'>{formik.errors.price}</FormFeedback>
-           ) : null}
-          </div>
+          <Row>
+           <Col sm='6'>
+            <div className='mb-3'>
+             <Label htmlFor='is-active'>فعال</Label>
+             &nbsp;
+             <Input
+              id='is_active'
+              name='is_active'
+              type='checkbox'
+              checked={formik.values.is_active}
+              onChange={e =>
+               formik.setFieldValue('is_active', e.target.checked)
+              }
+             />
+             {formik.errors.price && formik.touched.price ? (
+              <FormFeedback type='invalid'>{formik.errors.price}</FormFeedback>
+             ) : null}
+            </div>
+           </Col>
+           <Col sm='6'>
+            <div className='mb-3'>
+             <Label htmlFor='display_order'>اولویت نمایش </Label>
+             <Input
+              id='display_order'
+              name='display_order'
+              type='text'
+              placeholder='واحد فروش '
+              value={formik.values.display_order}
+              onChange={formik.handleChange}
+              invalid={
+               formik.touched.display_order && formik.errors.display_order
+                ? true
+                : false
+              }
+             />
+             {formik.errors.display_order && formik.touched.display_order ? (
+              <FormFeedback type='invalid'>
+               {formik.errors.display_order}
+              </FormFeedback>
+             ) : null}
+            </div>
+           </Col>
+          </Row>
 
           <Row>
            <Col sm='6'>
