@@ -31,6 +31,7 @@ import {
  ON_ADD_COMMENT_SUCCESS,
  GET_CATEGORIES,
  GET_CATEGORIES_SUCCESS,
+ ADD_CATEGORY,
  ADD_CATEGORY_SUCCESS,
  UPDATE_CATEGORY_SUCCESS,
  DELETE_CATEGORY_SUCCESS,
@@ -228,10 +229,29 @@ const Ecommerce = (state = INIT_STATE, action) => {
    };
 
   case GET_CATEGORIES:
-   return { ...state, categories: action.payload };
+   return {
+    ...state,
+    loading: true,
+   };
+
+  case GET_CATEGORIES_SUCCESS:
+   return {
+    ...state,
+    categories: action.payload,
+    loading: false,
+   };
+
+  case ADD_CATEGORY:
+   return {
+    ...state,
+   };
 
   case ADD_CATEGORY_SUCCESS:
-   return { ...state };
+   return {
+    ...state,
+    categories: categories.push(action.payload),
+    loading: false,
+   };
 
   case UPDATE_CATEGORY_SUCCESS:
    return { ...state };

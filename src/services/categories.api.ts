@@ -13,7 +13,7 @@ const BASE_URL = import.meta.env.VITE_APP_BASE_URL || 'https://api.example.com';
 async function handleResponse<T>(res: Response): Promise<T> {
  if (!res.ok) {
   const err = await res.json();
-  return await Promise.reject(err);
+  return await Promise.reject(err); 
  }
  return res.json();
 }

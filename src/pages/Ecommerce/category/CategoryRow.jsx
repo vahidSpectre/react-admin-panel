@@ -87,7 +87,6 @@ const CategoryRow = ({ category, index }) => {
     const message = res?.message || 'دسته‌بندی با موفقیت ایجاد شد';
     toast.success(message);
     setCreateCategoryModalOpen(false);
-    fetchCategories();
     formik.resetForm();
    } catch (error) {
     console.error('خطا در ثبت دسته‌بندی:', error);

@@ -19,19 +19,22 @@ import Select from 'react-select';
 //Import Breadcrumb
 import Breadcrumbs from '../../components/Common/Breadcrumb';
 import { toast } from 'react-toastify';
-import { createCategory, getCategories } from '../../services/categories.api';
 import OptionalSizes from '../Ui/UiModal/OptionalSizes';
 import Dropzone from 'react-dropzone';
 import '../../styles/categories.scss';
 import { useDispatch } from 'react-redux';
 
 import CategoryRow from './category/CategoryRow';
+import { getCategories } from '../../store/e-commerce/actions';
+import { useSelector } from 'react-redux';
 const EcommerenceAddCategory = () => {
  const [createCategoryModalOpen, setCreateCategoryModalOpen] = useState(false);
  const [selectedFiles, setSelectedFiles] = useState([]);
- const [categories, setCategories] = useState([]);
+//  const [categories, setCategories] = useState([]);
 
- const dispatch = useDispatch();
+  const { categories } = useSelector(state => state.ecommerce);
+  
+  const dispatch = useDispatch()
 
  //meta title
  document.title = 'دسته بندی ها ';
@@ -81,7 +84,6 @@ const EcommerenceAddCategory = () => {
     const message = res?.message || 'دسته‌بندی با موفقیت ایجاد شد';
     toast.success(message);
     setCreateCategoryModalOpen(false);
-    fetchCategories();
     formik.resetForm();
    } catch (error) {
     console.error('خطا در ثبت دسته‌بندی:', error);
@@ -121,14 +123,10 @@ const EcommerenceAddCategory = () => {
  const handleGoToMusurements = () => {};
 
  useEffect(() => {
-  fetchCategories();
+   dispatch(getCategories())
  }, []);
  // API CALLS
 
- const fetchCategories = async () => {
-  const categoryResponse = await getCategories();
-  setCategories(categoryResponse.data.items);
- };
 
  useEffect(() => {
   console.log(categories);
@@ -216,7 +214,7 @@ const EcommerenceAddCategory = () => {
            <tbody>
             {categories &&
              categories.map((category, i) => {
-              return <CategoryRow category={category} index={i} />;
+              return <CategoryRow category={category} index={i+1} />;
              })}
            </tbody>
           </table>

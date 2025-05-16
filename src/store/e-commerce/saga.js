@@ -20,7 +20,6 @@ import {
  ON_ADD_REPLY,
  ON_ADD_COMMENT,
  GET_CATEGORIES,
- GET_CATEGORIES_SUCCESS,
  ADD_CATEGORY,
  ADD_CATEGORY_SUCCESS,
  UPDATE_CATEGORY,
@@ -65,6 +64,7 @@ import {
  onAddCommentSuccess,
  onAddCommentFail,
  onGetCategoriesSuccess,
+ onAddCategoriesSuccess,
 } from './actions';
 
 //Include Both Helper File with needed methods
@@ -74,6 +74,7 @@ import {
  getOrders,
  getProducts,
  getCategories,
+ addCategories,
  getShops,
  getProductDetail,
  addNewOrder,
@@ -265,7 +266,7 @@ function* onAddComment({ payload: { productId, commentText } }) {
 function* fetchCategories() {
  try {
   const response = yield call(getCategories);
-  yield put(onGetCategoriesSuccess(response));
+  yield put(onGetCategoriesSuccess(response.data.items));
  } catch (error) {
   yield put({ type: CATEGORY_ERROR, payload: error.message });
  }
@@ -274,8 +275,8 @@ function* fetchCategories() {
 // 📌 2. Add New Category
 function* addCategory(action) {
  try {
-  const response = yield call(() => axios.post('/categories', action.payload));
-  yield put({ type: ADD_CATEGORY_SUCCESS, payload: response.data });
+  const response = yield call(addCategory(action.payload));
+  yield put(onAddCategoriesSuccess(action.payload));
   // You can refetch the list or update local state here
   yield put({ type: GET_CATEGORIES }); // Optional: Refresh list
  } catch (error) {

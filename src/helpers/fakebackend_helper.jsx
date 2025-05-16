@@ -100,6 +100,8 @@ export const getProducts = () => get(url.GET_PRODUCTS);
 // get Products
 export const getCategories = () => get(url.GET_CATEGORIES);
 
+export const addCategories = () => get(url.ADD_CATEGORIES);
+
 // get Product detail
 export const getProductDetail = id =>
  get(`${url.GET_PRODUCTS_DETAIL}/${id}`, { params: { id } });

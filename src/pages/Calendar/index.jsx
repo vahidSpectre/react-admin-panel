@@ -122,7 +122,7 @@ const Calender = (props) => {
   const [selectedDay, setSelectedDay] = useState(0);
 
   useEffect(() => {
-    dispatch(onGetCategories());
+    // dispatch(onGetCategories());
     dispatch(onGetEvents());
     new Draggable(document.getElementById("external-events"), {
       itemSelector: ".external-event",
