@@ -83,12 +83,12 @@ const EcommerenceAddCategory = () => {
    unit: yup.number(),
    parent_ids: yup.array(),
    display_order: yup.number(),
-   meta: {
+   meta: yup.object().shape({
     meta_keywords: yup.array(),
     meta_description: yup.string(),
     meta_title: yup.string(),
     canonical: yup.string(),
-   },
+   }),
   }),
   onSubmit: async values => {
    try {
@@ -109,7 +109,7 @@ const EcommerenceAddCategory = () => {
     };
 
     console.log(payload);
-    // dispatch(addCategories(payload));
+    dispatch(addCategories(payload));
 
     setCreateCategoryModalOpen(false);
     formik.resetForm();
@@ -631,7 +631,6 @@ const EcommerenceAddCategory = () => {
             </CardBody>
            </Col>
            <Col sm='4'>
-            {' '}
             <CardBody>
              <CardTitle className='mb-3'> تصویر بنر</CardTitle>
              <Form>
@@ -701,7 +700,6 @@ const EcommerenceAddCategory = () => {
             </CardBody>
            </Col>
           </Row>
-          <Card></Card>
           <Meta formik={formik} />
           <div className='d-flex flex-wrap gap-2'>
            <Button type='submit' color='primary' disabled={formik.isSubmitting}>

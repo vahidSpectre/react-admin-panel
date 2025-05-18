@@ -14,9 +14,6 @@ import TagInput from '../../components/Common/TagInput';
 
 const Meta = ({ formik }) => {
  const { values, handleChange, touched, errors, setFieldValue } = formik;
- useEffect(() => {
-  console.log(values);
- }, [values]);
 
  return (
   <Card>
@@ -28,25 +25,25 @@ const Meta = ({ formik }) => {
      <Row>
       <Col sm={6}>
        <div className='mb-3'>
-        <Label htmlFor='meta_title'> Meta Title</Label>
+        <Label htmlFor='meta.meta_title'> Meta Title</Label>
         <Input
-         id='meta_title'
-         name='meta_title'
+         id='meta.meta_title'
+         name='meta.meta_title'
          type='text'
          placeholder='title'
-         value={values.meta.meta_title}
+         //  value={values.meta.meta_title}
          onChange={handleChange}
         />
        </div>
 
        <div className='mb-3'>
-        <Label htmlFor='meta_title'>Canocical Tag</Label>
+        <Label htmlFor='meta.canonical'>Canonical Tag</Label>
         <Input
-         id='meta_title'
-         name='meta_title'
+         id='meta.canonical'
+         name='meta.canonical'
          type='text'
          placeholder='canonical'
-         value={values.meta.canonical}
+         //  value={values.meta.canonical}
          onChange={handleChange}
         />
        </div>
@@ -54,22 +51,22 @@ const Meta = ({ formik }) => {
        <div className='mb-3'>
         <Label htmlFor='meta_keywords'>Meta Keywords</Label>
         <TagInput
-         tags={values.meta.meta_keywords}
-         setTags={tags => setFieldValue('meta_keywords', tags)}
+         //  tags={values.meta.meta_keywords}
+         setTags={tags => setFieldValue('meta.meta_keywords', tags)}
         />
        </div>
       </Col>
 
       <Col sm={6}>
        <div className='mb-3'>
-        <Label htmlFor='meta_description'>Meta Description</Label>
+        <Label htmlFor='meta.meta_description'>Meta Description</Label>
         <Input
-         name='meta_description'
-         id='meta_description'
+         name='meta.meta_description'
+         id='meta.meta_description'
          tag='textarea'
          rows={5}
          placeholder='description'
-         value={values.meta.meta_description}
+         //  value={values.meta.meta_description}
          onChange={handleChange}
         />
        </div>
