@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+
 import {
  Button,
  Card,
@@ -25,14 +26,20 @@ import '../../styles/categories.scss';
 import { useDispatch } from 'react-redux';
 
 import CategoryRow from './category/CategoryRow';
-import { addCategories, getCategories } from '../../store/e-commerce/actions';
+import {
+ addCategories,
+ deleteCategory,
+ getCategories,
+} from '../../store/e-commerce/actions';
 import { useSelector } from 'react-redux';
 import CustomPagination from '../../components/Common/CustomPagination';
+import Meta from './Meta';
 const EcommerenceAddCategory = () => {
  const [createCategoryModalOpen, setCreateCategoryModalOpen] = useState(false);
  const [selectedFiles, setSelectedFiles] = useState([]);
  const [page, setPage] = useState(1);
  const [categoryOptions, setCategoryOptions] = useState([]);
+ const [deletItemsIds, setDeletItemsIds] = useState([]);
  //  const [categories, setCategories] = useState([]);
 
  const categories = useSelector(state => state.ecommerce.categories.items);
@@ -61,6 +68,12 @@ const EcommerenceAddCategory = () => {
    parent_ids: [],
    unit: 0,
    display_order: 0,
+   meta: {
+    meta_keywords: [],
+    meta_description: '',
+    meta_title: '',
+    canonical: '',
+   },
   },
   validationSchema: yup.object().shape({
    name: yup.string().required('لطفا نام محصول خود را وارد کنید'),
@@ -70,6 +83,12 @@ const EcommerenceAddCategory = () => {
    unit: yup.number(),
    parent_ids: yup.array(),
    display_order: yup.number(),
+   meta: {
+    meta_keywords: yup.array(),
+    meta_description: yup.string(),
+    meta_title: yup.string(),
+    canonical: yup.string(),
+   },
   }),
   onSubmit: async values => {
    try {
@@ -81,9 +100,16 @@ const EcommerenceAddCategory = () => {
      is_active: values.is_active,
      unit: Number(values.unit || 0),
      display_order: Number(values.display_order),
+     meta: {
+      meta_title: values.meta.meta_title,
+      meta_description: values.meta.meta_description,
+      meta_keywords: values.meta.meta_keywords,
+      canonical: values.meta.canonical,
+     },
     };
 
-    dispatch(addCategories(payload));
+    console.log(payload);
+    // dispatch(addCategories(payload));
 
     setCreateCategoryModalOpen(false);
     formik.resetForm();
@@ -111,7 +137,7 @@ const EcommerenceAddCategory = () => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
  }
 
- function handleAcceptedFiles(files) {
+ function handleAcceptedFiles(files, type) {
   files.map(file =>
    Object.assign(file, {
     preview: URL.createObjectURL(file),
@@ -123,6 +149,10 @@ const EcommerenceAddCategory = () => {
  }
 
  const handleGoToMusurements = () => {};
+
+ const handleDeleteItems = () => {
+  dispatch(deleteCategory(deletItemsIds));
+ };
 
  useEffect(() => {
   dispatch(getCategories(page));
@@ -144,6 +174,18 @@ const EcommerenceAddCategory = () => {
   }
  }, [categories, pagination]);
 
+ const handleAddId = (status, id) => {
+  if (status) {
+   setDeletItemsIds(prev => [...prev, id]);
+  } else {
+   setDeletItemsIds(prev => prev.filter(itemId => itemId !== id));
+  }
+ };
+
+ useEffect(() => {
+  console.log(deletItemsIds);
+ }, [deletItemsIds]);
+
  return (
   <React.Fragment>
    <div className='page-content category-main-container'>
@@ -160,7 +202,7 @@ const EcommerenceAddCategory = () => {
          color='primary'
          onClick={() => setCreateCategoryModalOpen(true)}>
          <i
-          className='bxr bx-plus-square'
+          className='mdi mdi-chart-box-plus-outline'
           style={{ color: '#fff !important' }}></i>
          <span>ایجاد دسته‌بندی</span>
         </Button>
@@ -170,9 +212,24 @@ const EcommerenceAddCategory = () => {
          className='mx-3'
          onClick={handleGoToMusurements}>
          <i
-          className='bxr bx-plus-square'
+          className='mdi mdi-tape-measure
+'
           style={{ color: '#fff !important' }}></i>
          <span>واحد های اندازه گیری</span>
+        </Button>
+        <Button
+         type='submit'
+         color='danger'
+         onClick={handleDeleteItems}
+         disabled={deletItemsIds.length === 0}
+         style={{ width: '220px' }}>
+         <i className='mdi mdi-delete' style={{ color: '#fff !important' }}></i>
+         <span>
+          {deletItemsIds.length > 0 && `(${deletItemsIds.length})`}&nbsp;
+          {deletItemsIds.length > 1
+           ? 'پاک کردن دسته بندی ها'
+           : 'پاک کردن دسته بندی'}
+         </span>
         </Button>
        </div>
       </Col>
@@ -200,6 +257,7 @@ const EcommerenceAddCategory = () => {
            <thead>
             <tr>
              <th scope='col'>ردیف</th>
+             <th scope='col'>انتخاب</th>
              <th scope='col' className='text-center'>
               نام
              </th>
@@ -241,12 +299,19 @@ const EcommerenceAddCategory = () => {
            <tbody>
             {categories &&
              categories.map((category, i) => {
-              return <CategoryRow category={category} index={i + 1} key={i} />;
+              return (
+               <CategoryRow
+                category={category}
+                index={i + 1}
+                key={i}
+                addToDeleteArray={handleAddId}
+               />
+              );
              })}
            </tbody>
           </table>
          </div>
-         {pagination && (
+         {pagination && categories.lenght > 0 && (
           <CustomPagination
            pagination={pagination}
            onPageChange={handlePaginationChange}
@@ -399,7 +464,6 @@ const EcommerenceAddCategory = () => {
             </div>
            </Col>
           </Row>
-
           <Row>
            <Col sm='6'>
             <div className='mb-3'>
@@ -427,75 +491,218 @@ const EcommerenceAddCategory = () => {
             </div>
            </Col>
           </Row>
-          <Card>
-           <CardBody>
-            <CardTitle className='mb-3'>تصویر دسته بندی</CardTitle>
-            <Form>
-             <Dropzone
-              onDrop={acceptedFiles => {
-               handleAcceptedFiles(acceptedFiles);
-              }}>
-              {({ getRootProps, getInputProps }) => (
-               <div className='dropzone'>
-                <div className='dz-message needsclick' {...getRootProps()}>
-                 <input {...getInputProps()} />
-                 <div className='dz-message needsclick'>
-                  <div className='mb-3'>
-                   <i className='display-4 text-muted bx bxs-cloud-upload' />
+          <Row>
+           <Col sm='4'>
+            <CardBody>
+             <CardTitle className='mb-3'>تصویر دسته بندی</CardTitle>
+             <Form>
+              <Dropzone
+               onDrop={acceptedFiles => {
+                handleAcceptedFiles(acceptedFiles);
+               }}>
+               {({ getRootProps, getInputProps }) => (
+                <div className='dropzone'>
+                 <div className='dz-message needsclick' {...getRootProps()}>
+                  <input {...getInputProps()} />
+                  <div className='dz-message needsclick'>
+                   <div className='mb-3'>
+                    <i className='display-4 text-muted bx bxs-cloud-upload' />
+                   </div>
+                   <p>فایل ها را اینجا رها کنید یا برای آپلود کلیک کنید</p>
                   </div>
-                  <h4>فایل ها را اینجا رها کنید یا برای آپلود کلیک کنید</h4>
                  </div>
                 </div>
-               </div>
-              )}
-             </Dropzone>
-             <ul className='list-unstyled mb-0' id='file-previews'>
-              {selectedFiles.map((file, index) => {
-               return (
-                <li className='mt-2 dz-image-preview' key=''>
-                 <div className='border rounded'>
-                  <div className='d-flex flex-wrap gap-2 p-2'>
-                   <div className='flex-shrink-0 me-3'>
-                    <div className='avatar-sm bg-light rounded p-2'>
-                     <img
-                      data-dz-thumbnail=''
-                      className='img-fluid rounded d-block'
-                      src={file.preview}
-                      alt={file.name}
-                     />
+               )}
+              </Dropzone>
+              <ul className='list-unstyled mb-0' id='file-previews'>
+               {selectedFiles.map((file, index) => {
+                return (
+                 <li className='mt-2 dz-image-preview' key=''>
+                  <div className='border rounded'>
+                   <div className='d-flex flex-wrap gap-2 p-2'>
+                    <div className='flex-shrink-0 me-3'>
+                     <div className='avatar-sm bg-light rounded p-2'>
+                      <img
+                       data-dz-thumbnail=''
+                       className='img-fluid rounded d-block'
+                       src={file.preview}
+                       alt={file.name}
+                      />
+                     </div>
                     </div>
-                   </div>
-                   <div className='flex-grow-1'>
-                    <div className='pt-1'>
-                     <h5 className='fs-md mb-1' data-dz-name>
-                      {file.path}
-                     </h5>
-                     <strong
-                      className='error text-danger'
-                      data-dz-errormessage></strong>
+                    <div className='flex-grow-1'>
+                     <div className='pt-1'>
+                      <h5 className='fs-md mb-1' data-dz-name>
+                       {file.path}
+                      </h5>
+                      <strong
+                       className='error text-danger'
+                       data-dz-errormessage></strong>
+                     </div>
                     </div>
-                   </div>
-                   <div className='flex-shrink-0 ms-3'>
-                    <Button
-                     color='danger'
-                     size='sm'
-                     onClick={() => {
-                      const newImages = [...selectedFiles];
-                      newImages.splice(index, 1);
-                      setSelectedFiles(newImages);
-                     }}>
-                     حذف
-                    </Button>
+                    <div className='flex-shrink-0 ms-3'>
+                     <Button
+                      color='danger'
+                      size='sm'
+                      onClick={() => {
+                       const newImages = [...selectedFiles];
+                       newImages.splice(index, 1);
+                       setSelectedFiles(newImages);
+                      }}>
+                      حذف
+                     </Button>
+                    </div>
                    </div>
                   </div>
+                 </li>
+                );
+               })}
+              </ul>
+             </Form>
+            </CardBody>
+           </Col>
+           <Col sm='4'>
+            <CardBody>
+             <CardTitle className='mb-3'>تصویر آیکون </CardTitle>
+             <Form>
+              <Dropzone
+               onDrop={acceptedFiles => {
+                handleAcceptedFiles(acceptedFiles);
+               }}>
+               {({ getRootProps, getInputProps }) => (
+                <div className='dropzone'>
+                 <div className='dz-message needsclick' {...getRootProps()}>
+                  <input {...getInputProps()} />
+                  <div className='dz-message needsclick'>
+                   <div className='mb-3'>
+                    <i className='display-4 text-muted bx bxs-cloud-upload' />
+                   </div>
+                   <p>فایل ها را اینجا رها کنید یا برای آپلود کلیک کنید</p>
+                  </div>
                  </div>
-                </li>
-               );
-              })}
-             </ul>
-            </Form>
-           </CardBody>
-          </Card>
+                </div>
+               )}
+              </Dropzone>
+              <ul className='list-unstyled mb-0' id='file-previews'>
+               {selectedFiles.map((file, index) => {
+                return (
+                 <li className='mt-2 dz-image-preview' key=''>
+                  <div className='border rounded'>
+                   <div className='d-flex flex-wrap gap-2 p-2'>
+                    <div className='flex-shrink-0 me-3'>
+                     <div className='avatar-sm bg-light rounded p-2'>
+                      <img
+                       data-dz-thumbnail=''
+                       className='img-fluid rounded d-block'
+                       src={file.preview}
+                       alt={file.name}
+                      />
+                     </div>
+                    </div>
+                    <div className='flex-grow-1'>
+                     <div className='pt-1'>
+                      <h5 className='fs-md mb-1' data-dz-name>
+                       {file.path}
+                      </h5>
+                      <strong
+                       className='error text-danger'
+                       data-dz-errormessage></strong>
+                     </div>
+                    </div>
+                    <div className='flex-shrink-0 ms-3'>
+                     <Button
+                      color='danger'
+                      size='sm'
+                      onClick={() => {
+                       const newImages = [...selectedFiles];
+                       newImages.splice(index, 1);
+                       setSelectedFiles(newImages);
+                      }}>
+                      حذف
+                     </Button>
+                    </div>
+                   </div>
+                  </div>
+                 </li>
+                );
+               })}
+              </ul>
+             </Form>
+            </CardBody>
+           </Col>
+           <Col sm='4'>
+            {' '}
+            <CardBody>
+             <CardTitle className='mb-3'> تصویر بنر</CardTitle>
+             <Form>
+              <Dropzone
+               onDrop={acceptedFiles => {
+                handleAcceptedFiles(acceptedFiles);
+               }}>
+               {({ getRootProps, getInputProps }) => (
+                <div className='dropzone'>
+                 <div className='dz-message needsclick' {...getRootProps()}>
+                  <input {...getInputProps()} />
+                  <div className='dz-message needsclick'>
+                   <div className='mb-3'>
+                    <i className='display-4 text-muted bx bxs-cloud-upload' />
+                   </div>
+                   <p>فایل ها را اینجا رها کنید یا برای آپلود کلیک کنید</p>
+                  </div>
+                 </div>
+                </div>
+               )}
+              </Dropzone>
+              <ul className='list-unstyled mb-0' id='file-previews'>
+               {selectedFiles.map((file, index) => {
+                return (
+                 <li className='mt-2 dz-image-preview' key=''>
+                  <div className='border rounded'>
+                   <div className='d-flex flex-wrap gap-2 p-2'>
+                    <div className='flex-shrink-0 me-3'>
+                     <div className='avatar-sm bg-light rounded p-2'>
+                      <img
+                       data-dz-thumbnail=''
+                       className='img-fluid rounded d-block'
+                       src={file.preview}
+                       alt={file.name}
+                      />
+                     </div>
+                    </div>
+                    <div className='flex-grow-1'>
+                     <div className='pt-1'>
+                      <h5 className='fs-md mb-1' data-dz-name>
+                       {file.path}
+                      </h5>
+                      <strong
+                       className='error text-danger'
+                       data-dz-errormessage></strong>
+                     </div>
+                    </div>
+                    <div className='flex-shrink-0 ms-3'>
+                     <Button
+                      color='danger'
+                      size='sm'
+                      onClick={() => {
+                       const newImages = [...selectedFiles];
+                       newImages.splice(index, 1);
+                       setSelectedFiles(newImages);
+                      }}>
+                      حذف
+                     </Button>
+                    </div>
+                   </div>
+                  </div>
+                 </li>
+                );
+               })}
+              </ul>
+             </Form>
+            </CardBody>
+           </Col>
+          </Row>
+          <Card></Card>
+          <Meta formik={formik} />
           <div className='d-flex flex-wrap gap-2'>
            <Button type='submit' color='primary' disabled={formik.isSubmitting}>
             ذخیره تغییرات

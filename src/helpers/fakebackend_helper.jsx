@@ -106,12 +106,11 @@ export const addCategoryUrl = data => post(url.ADD_CATEGORIES, data);
 export const updateCategoryUrl = data =>
  patch(`${url.ADD_CATEGORIES}/${data.id}`, data);
 
-export const deleteCategoryUrl = data =>
- patch(`${url.ADD_CATEGORIES}/${data.id}`, data);
+export const deleteCategoryUrl = data => del(`${url.ADD_CATEGORIES}`, data);
 
 // get Product detail
 export const getProductDetail = id =>
- get(`${url.GET_PRODUCTS_DETAIL}/${id}`, { params: { id } });
+ get(`${url.DELETE_CATEGORIES}/${id}`, { params: { id } });
 
 // get Events
 export const getEvents = () => get(url.GET_EVENTS);

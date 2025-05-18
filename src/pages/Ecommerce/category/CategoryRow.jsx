@@ -16,12 +16,12 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import Select from 'react-select';
 import Dropzone from 'react-dropzone';
-import { updateCategory } from '../../../services/categories.api';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { updateCategoryAction } from '../../../store/e-commerce/actions';
+import Meta from '../Meta';
 
-const CategoryRow = ({ category, index }) => {
+const CategoryRow = ({ category, index, addToDeleteArray }) => {
  const [createCategoryModalOpen, setCreateCategoryModalOpen] = useState(false);
  const [selectedFiles, setSelectedFiles] = useState([]);
  const [categoryOptions, setCategoryOptions] = useState([]);
@@ -38,6 +38,9 @@ const CategoryRow = ({ category, index }) => {
   parents: category.parents?.map(p => String(p.id)) || [],
   unit: category.unit || 0,
   display_order: category.display_order || 0,
+  meta_keywords: category.meta_keywords,
+  meta_description: category.meta_description,
+  meta_title: category.meta_title,
  };
 
  function isEqual(obj1, obj2) {
@@ -54,6 +57,9 @@ const CategoryRow = ({ category, index }) => {
    unit: yup.number(),
    parents: yup.array(),
    display_order: yup.number(),
+   meta_keywords: yup.array(),
+   meta_description: yup.string(),
+   meta_title: yup.string(),
   }),
   onSubmit: async values => {
    const payload = {
@@ -65,6 +71,9 @@ const CategoryRow = ({ category, index }) => {
     unit: Number(values.unit || 0),
     display_order: Number(values.display_order),
     id: category.id,
+    meta_title: values.meta_title,
+    meta_description: values.meta_description,
+    meta_keywords: values.meta_keywords,
    };
    const currentValuesForCompare = {
     ...initialValues,
@@ -94,6 +103,23 @@ const CategoryRow = ({ category, index }) => {
      'مشکلی در ثبت دسته‌بندی وجود دارد';
     toast.error(errorMessage);
    }
+  },
+ });
+
+ //Meta Data
+ const metaData = useFormik({
+  initialValues: {
+   productname: '',
+   manufacturername: '',
+   metadescription: '',
+  },
+  validationSchema: yup.object().shape({
+   productname: yup.string().required('لطفا نام محصول خود را وارد کنید'),
+   manufacturername: yup.string().required('لطفا نام سازنده خود را وارد کنید'),
+   metadescription: yup.string().required('لطفا توضیحات متا خود را وارد کنید'),
+  }),
+  onSubmit: values => {
+   metaData.resetForm();
   },
  });
 
@@ -136,6 +162,14 @@ const CategoryRow = ({ category, index }) => {
    <tr>
     <td className='text-nowrap' scope='row'>
      {index}
+    </td>
+    <td className='text-nowrap' scope='row'>
+     <Input
+      id='is_active'
+      name='is_active'
+      type='checkbox'
+      onChange={e => addToDeleteArray(e.target.checked, category.id)}
+     />
     </td>
     <td>{category.name}</td>
     <td colSpan='1'> {category.display_order}</td>
@@ -455,6 +489,7 @@ const CategoryRow = ({ category, index }) => {
               </ul>
              </Form>
             </CardBody>
+            <Meta formik={formik} />
            </Card>
            <div className='d-flex flex-wrap gap-2'>
             <Button
@@ -468,7 +503,7 @@ const CategoryRow = ({ category, index }) => {
             <Button
              type='button'
              color='secondary'
-             onClick={() => formik.resetForm()}>
+             onClick={() => setCreateCategoryModalOpen(false)}>
              لغو
             </Button>
            </div>

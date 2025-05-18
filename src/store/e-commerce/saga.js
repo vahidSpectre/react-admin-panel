@@ -304,9 +304,8 @@ function* updateCategory(action) {
 
 function* deleteCategory(action) {
  try {
-  const id = action.payload;
   yield call(deleteCategoryUrl, action.payload);
-  yield put({ type: DELETE_CATEGORY_SUCCESS, payload: id });
+  yield put({ type: DELETE_CATEGORY_SUCCESS, payload: action.payload });
   yield put({ type: GET_CATEGORIES });
  } catch (error) {
   yield put({ type: CATEGORY_ERROR, payload: error.message });

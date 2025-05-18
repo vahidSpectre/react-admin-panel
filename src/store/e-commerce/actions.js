@@ -343,9 +343,9 @@ export const updateCategory = data => ({
  payload: data,
 });
 
-export const deleteCategory = id => ({ type: DELETE_CATEGORY, payload: id });
+export const deleteCategory = data => ({ type: DELETE_CATEGORY, payload: data });
 
-export const onDeleteCategory = id => ({
+export const onDeleteCategorySuccess = data => ({
  type: DELETE_CATEGORY_SUCCESS,
- payload: id,
+ payload: data,
 });

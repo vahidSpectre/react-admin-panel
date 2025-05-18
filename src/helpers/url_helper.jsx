@@ -20,6 +20,7 @@ export const GET_PRODUCTS_DETAIL = "/product";
 export const GET_CATEGORIES = '/categories';
 export const ADD_CATEGORIES = '/categories';
 export const UPDATE_CATEGORIES = '/categories';
+export const DELETE_CATEGORIES = '/categories';
 
 //Mails
 export const GET_MAILS_LIST = "/mailslists";

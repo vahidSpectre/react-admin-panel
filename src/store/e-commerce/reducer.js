@@ -267,7 +267,7 @@ const Ecommerce = (state = INIT_STATE, action) => {
   case DELETE_CATEGORY_SUCCESS:
    return {
     ...state,
-    categories: state.categories.filter(c => c.id !== action.payload),
+    categories: state.categories.filter(c => !action.payload.includes(c.id)),
    };
 
   default:
