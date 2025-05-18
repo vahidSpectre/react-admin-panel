@@ -35,6 +35,8 @@ import {
  ADD_CATEGORY_SUCCESS,
  UPDATE_CATEGORY_SUCCESS,
  DELETE_CATEGORY_SUCCESS,
+ UPDATE_CATEGORY,
+ DELETE_CATEGORY,
 } from './actionTypes';
 
 const INIT_STATE = {
@@ -249,11 +251,17 @@ const Ecommerce = (state = INIT_STATE, action) => {
   case ADD_CATEGORY_SUCCESS:
    return {
     ...state,
-    categories: categories.push(action.payload),
+    categories: [...state.categories.items, action.payload],
     loading: false,
    };
 
+  case UPDATE_CATEGORY:
+   return { ...state };
+
   case UPDATE_CATEGORY_SUCCESS:
+   return { ...state };
+
+  case DELETE_CATEGORY:
    return { ...state };
 
   case DELETE_CATEGORY_SUCCESS:

@@ -25,16 +25,20 @@ import '../../styles/categories.scss';
 import { useDispatch } from 'react-redux';
 
 import CategoryRow from './category/CategoryRow';
-import { getCategories } from '../../store/e-commerce/actions';
+import { addCategories, getCategories } from '../../store/e-commerce/actions';
 import { useSelector } from 'react-redux';
+import CustomPagination from '../../components/Common/CustomPagination';
 const EcommerenceAddCategory = () => {
  const [createCategoryModalOpen, setCreateCategoryModalOpen] = useState(false);
  const [selectedFiles, setSelectedFiles] = useState([]);
-//  const [categories, setCategories] = useState([]);
+ const [page, setPage] = useState(1);
+ const [categoryOptions, setCategoryOptions] = useState([]);
+ //  const [categories, setCategories] = useState([]);
 
-  const { categories } = useSelector(state => state.ecommerce);
-  
-  const dispatch = useDispatch()
+ const categories = useSelector(state => state.ecommerce.categories.items);
+ const pagination = useSelector(state => state.ecommerce.categories.pagination);
+
+ const dispatch = useDispatch();
 
  //meta title
  document.title = 'دسته بندی ها ';
@@ -54,7 +58,7 @@ const EcommerenceAddCategory = () => {
    slug: '',
    is_active: false,
    productdesc: '',
-   parents: [],
+   parent_ids: [],
    unit: 0,
    display_order: 0,
   },
@@ -64,7 +68,7 @@ const EcommerenceAddCategory = () => {
    is_active: yup.boolean(),
    productdesc: yup.string(),
    unit: yup.number(),
-   parents: yup.array(),
+   parent_ids: yup.array(),
    display_order: yup.number(),
   }),
   onSubmit: async values => {
@@ -73,16 +77,14 @@ const EcommerenceAddCategory = () => {
      name: values.name,
      slug: values.slug,
      description: values.productdesc,
-     parents: values.parents.map(Number),
+     parent_ids: values.parent_ids.map(Number),
      is_active: values.is_active,
      unit: Number(values.unit || 0),
      display_order: Number(values.display_order),
     };
 
-    const res = await createCategory(payload);
+    dispatch(addCategories(payload));
 
-    const message = res?.message || 'دسته‌بندی با موفقیت ایجاد شد';
-    toast.success(message);
     setCreateCategoryModalOpen(false);
     formik.resetForm();
    } catch (error) {
@@ -123,14 +125,24 @@ const EcommerenceAddCategory = () => {
  const handleGoToMusurements = () => {};
 
  useEffect(() => {
-   dispatch(getCategories())
+  dispatch(getCategories(page));
  }, []);
- // API CALLS
 
+ const handlePaginationChange = page => {
+  dispatch(getCategories(page));
+ };
 
  useEffect(() => {
   console.log(categories);
- }, [categories]);
+  if (categories) {
+   setCategoryOptions(
+    categories.map(category => ({
+     value: category.id,
+     label: category.name,
+    })),
+   );
+  }
+ }, [categories, pagination]);
 
  return (
   <React.Fragment>
@@ -138,29 +150,44 @@ const EcommerenceAddCategory = () => {
     <Container fluid>
      {/* Render Breadcrumb */}
      <Breadcrumbs title='تجارت الکترونیک' breadcrumbItem='دسته بندی' />
-     <Row dir='ltr'>
-      <Col sm='4'>
-       <Row>
-        <Col sm='6'>
-         <Button
-          type='submit'
-          color='primary'
-          onClick={() => setCreateCategoryModalOpen(true)}>
-          <i
-           className='bxr bx-plus-square'
-           style={{ color: '#fff !important' }}></i>
-          <span>ایجاد دسته‌بندی</span>
-         </Button>
-        </Col>
-        <Col sm='6'>
-         <Button type='submit' color='primary' onClick={handleGoToMusurements}>
-          <i
-           className='bxr bx-plus-square'
-           style={{ color: '#fff !important' }}></i>
-          <span>واحد های اندازه گیری</span>
-         </Button>
-        </Col>
-       </Row>
+     <Row
+      className='d-flex align-items-center justify-content-between'
+      dir='ltr'>
+      <Col sm='6'>
+       <div className='d-flex align-items-center my-3'>
+        <Button
+         type='submit'
+         color='primary'
+         onClick={() => setCreateCategoryModalOpen(true)}>
+         <i
+          className='bxr bx-plus-square'
+          style={{ color: '#fff !important' }}></i>
+         <span>ایجاد دسته‌بندی</span>
+        </Button>
+        <Button
+         type='submit'
+         color='primary'
+         className='mx-3'
+         onClick={handleGoToMusurements}>
+         <i
+          className='bxr bx-plus-square'
+          style={{ color: '#fff !important' }}></i>
+         <span>واحد های اندازه گیری</span>
+        </Button>
+       </div>
+      </Col>
+      <Col sm='3'>
+       <form className='app-search d-none d-lg-block'>
+        <div className='position-relative'>
+         <input
+          type='text'
+          className='form-control bg-white'
+          placeholder='جستجو...'
+          dir='rtl'
+         />
+         <span className='bx bx-search-alt' />
+        </div>
+       </form>
       </Col>
      </Row>
      <Row>
@@ -214,11 +241,17 @@ const EcommerenceAddCategory = () => {
            <tbody>
             {categories &&
              categories.map((category, i) => {
-              return <CategoryRow category={category} index={i+1} />;
+              return <CategoryRow category={category} index={i + 1} key={i} />;
              })}
            </tbody>
           </table>
          </div>
+         {pagination && (
+          <CustomPagination
+           pagination={pagination}
+           onPageChange={handlePaginationChange}
+          />
+         )}
         </CardBody>
        </Card>
       </Col>
@@ -297,27 +330,27 @@ const EcommerenceAddCategory = () => {
            </Col>
            <Col sm='6'>
             <div className='mb-3'>
-             <Label htmlFor='parents'>دسته بندی والد</Label>
+             <Label htmlFor='parent_ids'>دسته بندی والد</Label>
              <Select
               classNamePrefix='select2-selection'
-              name='parents'
+              name='parent_ids'
               placeholder='انتخاب ...'
-              options={options}
+              options={categoryOptions}
               isMulti
-              value={options.filter(option =>
-               formik.values.parents.includes(option.value),
+              value={categoryOptions.filter(option =>
+               formik.values.parent_ids.includes(option.value),
               )}
               onChange={selectedOptions =>
                formik.setFieldValue(
-                'parents',
+                'parent_ids',
                 selectedOptions.map(option => option.value),
                )
               }
              />
 
-             {formik.errors.parents && formik.touched.parents ? (
+             {formik.errors.parent_ids && formik.touched.parent_ids ? (
               <FormFeedback type='invalid'>
-               {formik.errors.parents}
+               {formik.errors.parent_ids}
               </FormFeedback>
              ) : null}
             </div>

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { del, get, post, put } from './api_helper';
+import { del, get, post, put, patch } from './api_helper';
 import * as url from './url_helper';
 
 // Gets the logged in user data from local session
@@ -97,10 +97,17 @@ export const postSocialLogin = data => post(url.SOCIAL_LOGIN, data);
 // get Products
 export const getProducts = () => get(url.GET_PRODUCTS);
 
-// get Products
-export const getCategories = () => get(url.GET_CATEGORIES);
+// categories CRUD
+export const getCategoriesUrl = page =>
+ get(`${url.GET_CATEGORIES}?page=${page}`, page);
 
-export const addCategories = () => get(url.ADD_CATEGORIES);
+export const addCategoryUrl = data => post(url.ADD_CATEGORIES, data);
+
+export const updateCategoryUrl = data =>
+ patch(`${url.ADD_CATEGORIES}/${data.id}`, data);
+
+export const deleteCategoryUrl = data =>
+ patch(`${url.ADD_CATEGORIES}/${data.id}`, data);
 
 // get Product detail
 export const getProductDetail = id =>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
  Button,
  Card,
@@ -17,19 +17,18 @@ import * as yup from 'yup';
 import Select from 'react-select';
 import Dropzone from 'react-dropzone';
 import { updateCategory } from '../../../services/categories.api';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { updateCategoryAction } from '../../../store/e-commerce/actions';
 
 const CategoryRow = ({ category, index }) => {
  const [createCategoryModalOpen, setCreateCategoryModalOpen] = useState(false);
  const [selectedFiles, setSelectedFiles] = useState([]);
+ const [categoryOptions, setCategoryOptions] = useState([]);
 
- const options = [
-  { value: 'AK', label: 'تهران' },
-  { value: 'HI', label: 'اصفهان' },
-  { value: 'CA', label: 'مشهد' },
-  { value: 'NV', label: 'قزوین' },
-  { value: 'OR', label: 'ایلام' },
-  { value: 'WA', label: 'زنجان' },
- ];
+ const categories = useSelector(state => state.ecommerce.categories.items);
+
+ const dispatch = useDispatch();
 
  const initialValues = {
   name: category.name || '',
@@ -65,6 +64,7 @@ const CategoryRow = ({ category, index }) => {
     is_active: values.is_active,
     unit: Number(values.unit || 0),
     display_order: Number(values.display_order),
+    id: category.id,
    };
    const currentValuesForCompare = {
     ...initialValues,
@@ -82,10 +82,7 @@ const CategoryRow = ({ category, index }) => {
     return;
    }
    try {
-    const res = await updateCategory({ id: category.id, ...payload });
-
-    const message = res?.message || 'دسته‌بندی با موفقیت ایجاد شد';
-    toast.success(message);
+    dispatch(updateCategoryAction(payload));
     setCreateCategoryModalOpen(false);
     formik.resetForm();
    } catch (error) {
@@ -122,7 +119,18 @@ const CategoryRow = ({ category, index }) => {
 
   setSelectedFiles(files);
  }
- console.log(category);
+
+ useEffect(() => {
+  if (categories) {
+   setCategoryOptions(
+    categories.map(category => ({
+     value: category.id,
+     label: category.name,
+    })),
+   );
+  }
+ }, [categories]);
+
  return (
   category && (
    <tr>
@@ -183,7 +191,7 @@ const CategoryRow = ({ category, index }) => {
     <td colSpan='1'>
      {
       <Row>
-       <Col sm='6'>
+       {/* <Col sm='6'>
         <Button
          type='submit'
          color='success'
@@ -191,11 +199,11 @@ const CategoryRow = ({ category, index }) => {
          onClick={() => setCreateCategoryModalOpen(true)}>
          مشاهده
         </Button>
-       </Col>
-       <Col sm='6'>
+       </Col> */}
+       <Col sm='12'>
         <Button
          type='submit'
-         color='success'
+         color='primary'
          className='w-100'
          onClick={() => setCreateCategoryModalOpen(true)}>
          ویرایش
@@ -287,9 +295,9 @@ const CategoryRow = ({ category, index }) => {
                classNamePrefix='select2-selection'
                name='parents'
                placeholder='انتخاب ...'
-               options={options}
+               options={categoryOptions}
                isMulti
-               value={options.filter(option =>
+               value={categoryOptions.filter(option =>
                 formik.values.parents.includes(option.value),
                )}
                onChange={selectedOptions =>

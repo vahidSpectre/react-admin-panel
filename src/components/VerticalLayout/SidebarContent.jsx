@@ -146,6 +146,7 @@ const SidebarContent = props => {
    <SimpleBar className='h-100' ref={ref}>
     <div id='sidebar-menu'>
      <ul className='metismenu list-unstyled' id='side-menu'>
+      
       <li className='menu-title'>{props.t('منو')} </li>
       <li>
        <Link to='/#' className='has-arrow'>

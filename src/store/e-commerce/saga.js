@@ -1,4 +1,4 @@
-import { call, put, takeEvery } from 'redux-saga/effects';
+import { call, put, takeEvery, takeLatest } from 'redux-saga/effects';
 
 // Ecommerce Redux States
 import {
@@ -27,6 +27,7 @@ import {
  DELETE_CATEGORY,
  DELETE_CATEGORY_SUCCESS,
  CATEGORY_ERROR,
+ GET_CATEGORIES_SUCCESS,
 } from './actionTypes';
 import {
  getCartDataFail,
@@ -65,6 +66,7 @@ import {
  onAddCommentFail,
  onGetCategoriesSuccess,
  onAddCategoriesSuccess,
+ updateCategoryAction,
 } from './actions';
 
 //Include Both Helper File with needed methods
@@ -73,8 +75,6 @@ import {
  getCustomers,
  getOrders,
  getProducts,
- getCategories,
- addCategories,
  getShops,
  getProductDetail,
  addNewOrder,
@@ -88,6 +88,10 @@ import {
  onLikeReply as onLikeReplyApi,
  onAddReply as onAddReplyApi,
  onAddComment as onAddCommentApi,
+ deleteCategoryUrl,
+ updateCategoryUrl,
+ addCategoryUrl,
+ getCategoriesUrl,
 } from '../../helpers/fakebackend_helper';
 
 // toast
@@ -262,47 +266,48 @@ function* onAddComment({ payload: { productId, commentText } }) {
  }
 }
 
-// 📌 1. Get All Categories
-function* fetchCategories() {
+function* fetchCategories(action) {
+ const page = action.payload || 1;
  try {
-  const response = yield call(getCategories);
-  yield put(onGetCategoriesSuccess(response.data.items));
+  const response = yield call(getCategoriesUrl, page);
+  yield put(onGetCategoriesSuccess(response.data));
+  toast.success(response.message);
  } catch (error) {
+  toast.error(error.message);
   yield put({ type: CATEGORY_ERROR, payload: error.message });
  }
 }
 
-// 📌 2. Add New Category
 function* addCategory(action) {
  try {
-  const response = yield call(addCategory(action.payload));
+  const response = yield call(addCategoryUrl, action.payload);
   yield put(onAddCategoriesSuccess(action.payload));
-  // You can refetch the list or update local state here
-  yield put({ type: GET_CATEGORIES }); // Optional: Refresh list
+  yield put({ type: GET_CATEGORIES, payload: 1 });
+  toast.success(response.message);
  } catch (error) {
+  toast.error(error.message);
   yield put({ type: CATEGORY_ERROR, payload: error.message });
  }
 }
 
-// 📌 3. Update Category
 function* updateCategory(action) {
+ console.log(action.payload);
  try {
-  const { id, data } = action.payload;
-  const response = yield call(() => axios.put(`/categories/${id}`, data));
-  yield put({ type: UPDATE_CATEGORY_SUCCESS, payload: response.data });
-  yield put({ type: GET_CATEGORIES }); // Optional: Refresh list
+  const response = yield call(updateCategoryUrl, action.payload);
+  toast.success(response.message);
+  yield put({ type: GET_CATEGORIES });
  } catch (error) {
+  toast.error(error.message);
   yield put({ type: CATEGORY_ERROR, payload: error.message });
  }
 }
 
-// 📌 4. Delete Category
 function* deleteCategory(action) {
  try {
   const id = action.payload;
-  yield call(() => axios.delete(`/categories/${id}`));
+  yield call(deleteCategoryUrl, action.payload);
   yield put({ type: DELETE_CATEGORY_SUCCESS, payload: id });
-  yield put({ type: GET_CATEGORIES }); // Optional: Refresh list
+  yield put({ type: GET_CATEGORIES });
  } catch (error) {
   yield put({ type: CATEGORY_ERROR, payload: error.message });
  }
@@ -310,8 +315,8 @@ function* deleteCategory(action) {
 
 function* ecommerceSaga() {
  yield takeEvery(GET_PRODUCTS, fetchProducts);
- yield takeEvery(GET_CATEGORIES, fetchCategories);
- yield takeEvery(ADD_CATEGORY, addCategory);
+ yield takeLatest(GET_CATEGORIES, fetchCategories);
+ yield takeLatest(ADD_CATEGORY, addCategory);
  yield takeEvery(UPDATE_CATEGORY, updateCategory);
  yield takeEvery(DELETE_CATEGORY, deleteCategory);
  yield takeEvery(GET_PRODUCT_DETAIL, fetchProductDetail);

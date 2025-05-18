@@ -56,6 +56,7 @@ import {
  DELETE_CATEGORY,
  GET_CATEGORIES_SUCCESS,
  ADD_CATEGORY_SUCCESS,
+ DELETE_CATEGORY_SUCCESS,
 } from './actionTypes';
 
 export const getProducts = () => ({
@@ -307,24 +308,35 @@ export const onAddCommentFail = error => ({
  payload: error,
 });
 
-export const getCategories = (data) => ({
+export const getCategories = (page = 1) => ({
  type: GET_CATEGORIES,
+ payload: page,
 });
 
-export const onGetCategoriesSuccess = (data) => ({
+export const onGetCategoriesSuccess = data => ({
  type: GET_CATEGORIES_SUCCESS,
  payload: data,
 });
 
-export const addCategories = (data) => ({
+export const addCategories = data => ({
  type: ADD_CATEGORY,
+ payload: data,
 });
 
-export const onAddCategoriesSuccess = (data) => ({
+export const onAddCategoriesSuccess = data => ({
  type: ADD_CATEGORY_SUCCESS,
  payload: data,
 });
 
+export const updateCategoryAction = data => ({
+ type: UPDATE_CATEGORY,
+ payload: data,
+});
+
+export const onUpdateCategoriesSuccess = data => ({
+ type: UPDATE_CUSTOMER_SUCCESS,
+ payload: data,
+});
 
 export const updateCategory = data => ({
  type: UPDATE_CATEGORY,
@@ -332,3 +344,8 @@ export const updateCategory = data => ({
 });
 
 export const deleteCategory = id => ({ type: DELETE_CATEGORY, payload: id });
+
+export const onDeleteCategory = id => ({
+ type: DELETE_CATEGORY_SUCCESS,
+ payload: id,
+});
