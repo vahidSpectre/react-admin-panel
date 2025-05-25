@@ -37,6 +37,18 @@ import {
  DELETE_CATEGORY_SUCCESS,
  UPDATE_CATEGORY,
  DELETE_CATEGORY,
+ SHOW_CATEGORY,
+ SHOW_CATEGORY_SUCCESS,
+ GET_MEASUREMENTS,
+ GET_MEASUREMENTS_SUCCESS,
+ SHOW_MEASUREMENT,
+ SHOW_MEASUREMENT_SUCCESS,
+ ADD_MEASUREMENT,
+ ADD_MEASUREMENT_SUCCESS,
+ UPDATE_MEASUREMENT,
+ UPDATE_MEASUREMENT_SUCCESS,
+ DELETE_MEASUREMENT,
+ DELETE_MEASUREMENT_SUCCESS,
 } from './actionTypes';
 
 const INIT_STATE = {
@@ -49,6 +61,9 @@ const INIT_STATE = {
  error: {},
  productComments: [],
  categories: [],
+ category: [],
+ measurements: [],
+ measurement: [],
  loading: true,
 };
 
@@ -243,6 +258,19 @@ const Ecommerce = (state = INIT_STATE, action) => {
     loading: false,
    };
 
+  case SHOW_CATEGORY:
+   return {
+    ...state,
+    loading: true,
+   };
+
+  case SHOW_CATEGORY_SUCCESS:
+   return {
+    ...state,
+    category: action.payload,
+    loading: false,
+   };
+
   case ADD_CATEGORY:
    return {
     ...state,
@@ -267,7 +295,64 @@ const Ecommerce = (state = INIT_STATE, action) => {
   case DELETE_CATEGORY_SUCCESS:
    return {
     ...state,
-    categories: state.categories.filter(c => !action.payload.includes(c.id)),
+    categories: state.categories.items.filter(
+     id => !action.payload.includes(id),
+    ),
+   };
+
+  case GET_MEASUREMENTS:
+   return {
+    ...state,
+    loading: true,
+   };
+
+  case GET_MEASUREMENTS_SUCCESS:
+   return {
+    ...state,
+    measurements: action.payload,
+    loading: false,
+   };
+
+  case SHOW_MEASUREMENT:
+   return {
+    ...state,
+    loading: true,
+   };
+
+  case SHOW_MEASUREMENT_SUCCESS:
+   return {
+    ...state,
+    measurement: action.payload,
+    loading: false,
+   };
+
+  case ADD_MEASUREMENT:
+   return {
+    ...state,
+   };
+
+  case ADD_MEASUREMENT_SUCCESS:
+   return {
+    ...state,
+    measurements: [...state.categories.items, action.payload],
+    loading: false,
+   };
+
+  case UPDATE_MEASUREMENT:
+   return { ...state };
+
+  case UPDATE_MEASUREMENT_SUCCESS:
+   return { ...state };
+
+  case DELETE_MEASUREMENT:
+   return { ...state };
+
+  case DELETE_MEASUREMENT_SUCCESS:
+   return {
+    ...state,
+    measurements: state.categories.items.filter(
+     id => !action.payload.includes(id),
+    ),
    };
 
   default:

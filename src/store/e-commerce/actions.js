@@ -1,3 +1,4 @@
+import Measurements from '../../pages/Ecommerce/Measurements';
 import {
  GET_CART_DATA,
  GET_CART_DATA_FAIL,
@@ -57,6 +58,18 @@ import {
  GET_CATEGORIES_SUCCESS,
  ADD_CATEGORY_SUCCESS,
  DELETE_CATEGORY_SUCCESS,
+ SHOW_CATEGORY,
+ SHOW_CATEGORY_SUCCESS,
+ GET_MEASUREMENTS,
+ GET_MEASUREMENTS_SUCCESS,
+ SHOW_MEASUREMENT,
+ SHOW_MEASUREMENT_SUCCESS,
+ ADD_MEASUREMENT,
+ ADD_MEASUREMENT_SUCCESS,
+ UPDATE_MEASUREMENT,
+ UPDATE_MEASUREMENT_SUCCESS,
+ DELETE_MEASUREMENT,
+ DELETE_MEASUREMENT_SUCCESS,
 } from './actionTypes';
 
 export const getProducts = () => ({
@@ -308,6 +321,7 @@ export const onAddCommentFail = error => ({
  payload: error,
 });
 
+// CATEGORIES
 export const getCategories = (page = 1) => ({
  type: GET_CATEGORIES,
  payload: page,
@@ -316,6 +330,16 @@ export const getCategories = (page = 1) => ({
 export const onGetCategoriesSuccess = data => ({
  type: GET_CATEGORIES_SUCCESS,
  payload: data,
+});
+
+export const getCategory = id => ({
+ type: SHOW_CATEGORY,
+ payload: id,
+});
+
+export const onGetCategorySuccess = id => ({
+ type: SHOW_CATEGORY_SUCCESS,
+ payload: id,
 });
 
 export const addCategories = data => ({
@@ -343,9 +367,63 @@ export const updateCategory = data => ({
  payload: data,
 });
 
-export const deleteCategory = data => ({ type: DELETE_CATEGORY, payload: data });
+export const deleteCategory = data => ({
+ type: DELETE_CATEGORY,
+ payload: data,
+});
 
 export const onDeleteCategorySuccess = data => ({
  type: DELETE_CATEGORY_SUCCESS,
+ payload: data,
+});
+
+//  Measurements
+export const getMeasurements = (page = 1) => ({
+ type: GET_MEASUREMENTS,
+ payload: page,
+});
+
+export const onGetMeasurementsSuccess = data => ({
+ type: GET_MEASUREMENTS_SUCCESS,
+ payload: data,
+});
+
+export const getMeasurement = id => ({
+ type: SHOW_MEASUREMENT,
+ payload: id,
+});
+
+export const onGetMeasurementSuccess = id => ({
+ type: SHOW_MEASUREMENT_SUCCESS,
+ payload: id,
+});
+
+export const addMeasurement = data => ({
+ type: ADD_MEASUREMENT,
+ payload: data,
+});
+
+export const onAddMeasurementSuccess = data => ({
+ type: ADD_MEASUREMENT_SUCCESS,
+ payload: data,
+});
+
+export const updateMeasurement = data => ({
+ type: UPDATE_MEASUREMENT,
+ payload: data,
+});
+
+export const onUpdateMeasurementSuccess = data => ({
+ type: UPDATE_MEASUREMENT_SUCCESS,
+ payload: data,
+});
+
+export const deleteMeasurement = data => ({
+ type: DELETE_MEASUREMENT,
+ payload: data,
+});
+
+export const onDeleteMeasurementSuccess = data => ({
+ type: DELETE_MEASUREMENT_SUCCESS,
  payload: data,
 });

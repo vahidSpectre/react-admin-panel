@@ -16,12 +16,6 @@ export const POST_EDIT_PROFILE = "/post-fake-profile";
 export const GET_PRODUCTS = "/products";
 export const GET_PRODUCTS_DETAIL = "/product";
 
-//CATEGORIES
-export const GET_CATEGORIES = '/categories';
-export const ADD_CATEGORIES = '/categories';
-export const UPDATE_CATEGORIES = '/categories';
-export const DELETE_CATEGORIES = '/categories';
-
 //Mails
 export const GET_MAILS_LIST = "/mailslists";
 export const SELECT_FOLDER = "/folders";
@@ -125,3 +119,27 @@ export const ON_LIKNE_COMMENT = "/comments-product-action";
 export const ON_ADD_REPLY = "/comments-product-add-reply";
 
 export const ON_ADD_COMMENT = "/comments-product-add-comment";
+
+
+
+//CATEGORIES
+export const GET_CATEGORIES = '/categories';
+
+export const SHOW_CATEGORIES = '/categories';
+
+export const ADD_CATEGORIES = '/categories';
+
+export const UPDATE_CATEGORIES = '/categories';
+
+export const DELETE_CATEGORIES = '/categories/bulk-destroy';
+
+//Measurement
+export const GET_MEASUREMENT = '/units';
+
+export const SHOW_MEASUREMENT = '/units';
+
+export const ADD_MEASUREMENT = '/units';
+
+export const UPDATE_MEASUREMENT = '/units';
+
+export const DELETE_MEASUREMENT = '/units';

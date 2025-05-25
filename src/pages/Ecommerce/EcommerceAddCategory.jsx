@@ -34,6 +34,7 @@ import {
 import { useSelector } from 'react-redux';
 import CustomPagination from '../../components/Common/CustomPagination';
 import Meta from './Meta';
+import { emptyToNull } from '../../helpers/helperFunctions';
 const EcommerenceAddCategory = () => {
  const [createCategoryModalOpen, setCreateCategoryModalOpen] = useState(false);
  const [selectedFiles, setSelectedFiles] = useState([]);
@@ -49,15 +50,6 @@ const EcommerenceAddCategory = () => {
 
  //meta title
  document.title = 'دسته بندی ها ';
-
- const options = [
-  { value: 'AK', label: 'تهران' },
-  { value: 'HI', label: 'اصفهان' },
-  { value: 'CA', label: 'مشهد' },
-  { value: 'NV', label: 'قزوین' },
-  { value: 'OR', label: 'ایلام' },
-  { value: 'WA', label: 'زنجان' },
- ];
 
  const formik = useFormik({
   initialValues: {
@@ -91,6 +83,11 @@ const EcommerenceAddCategory = () => {
    }),
   }),
   onSubmit: async values => {
+   const isMetaEmpty =
+    !values.meta.meta_title &&
+    !values.meta.meta_description &&
+    (!values.meta.meta_keywords || values.meta.meta_keywords.length === 0) &&
+    !values.meta.canonical;
    try {
     const payload = {
      name: values.name,
@@ -100,12 +97,14 @@ const EcommerenceAddCategory = () => {
      is_active: values.is_active,
      unit: Number(values.unit || 0),
      display_order: Number(values.display_order),
-     meta: {
-      meta_title: values.meta.meta_title,
-      meta_description: values.meta.meta_description,
-      meta_keywords: values.meta.meta_keywords,
-      canonical: values.meta.canonical,
-     },
+     meta: isMetaEmpty
+      ? null
+      : {
+         meta_title: emptyToNull(values.meta.meta_title),
+         meta_description: emptyToNull(values.meta.meta_description),
+         meta_keywords: emptyToNull(values.meta.meta_keywords),
+         canonical: emptyToNull(values.meta.canonical),
+        },
     };
 
     console.log(payload);
@@ -151,7 +150,8 @@ const EcommerenceAddCategory = () => {
  const handleGoToMusurements = () => {};
 
  const handleDeleteItems = () => {
-  dispatch(deleteCategory(deletItemsIds));
+  dispatch(deleteCategory({ ids: deletItemsIds }));
+  setDeletItemsIds([]);
  };
 
  useEffect(() => {
@@ -163,7 +163,6 @@ const EcommerenceAddCategory = () => {
  };
 
  useEffect(() => {
-  console.log(categories);
   if (categories) {
    setCategoryOptions(
     categories.map(category => ({
@@ -303,7 +302,7 @@ const EcommerenceAddCategory = () => {
                <CategoryRow
                 category={category}
                 index={i + 1}
-                key={i}
+                key={category.id}
                 addToDeleteArray={handleAddId}
                />
               );

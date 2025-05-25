@@ -8,7 +8,6 @@ import {
  Input,
  Label,
  Row,
- FormFeedback,
 } from 'reactstrap';
 import TagInput from '../../components/Common/TagInput';
 
@@ -31,7 +30,7 @@ const Meta = ({ formik }) => {
          name='meta.meta_title'
          type='text'
          placeholder='title'
-         //  value={values.meta.meta_title}
+         value={values?.meta?.meta_title}
          onChange={handleChange}
         />
        </div>
@@ -43,7 +42,7 @@ const Meta = ({ formik }) => {
          name='meta.canonical'
          type='text'
          placeholder='canonical'
-         //  value={values.meta.canonical}
+         value={values?.meta?.canonical}
          onChange={handleChange}
         />
        </div>
@@ -51,7 +50,7 @@ const Meta = ({ formik }) => {
        <div className='mb-3'>
         <Label htmlFor='meta_keywords'>Meta Keywords</Label>
         <TagInput
-         //  tags={values.meta.meta_keywords}
+         tags={values?.meta?.meta_keywords && values?.meta?.meta_keywords}
          setTags={tags => setFieldValue('meta.meta_keywords', tags)}
         />
        </div>
@@ -66,7 +65,7 @@ const Meta = ({ formik }) => {
          tag='textarea'
          rows={5}
          placeholder='description'
-         //  value={values.meta.meta_description}
+         value={values?.meta?.meta_description}
          onChange={handleChange}
         />
        </div>
