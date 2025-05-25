@@ -285,7 +285,8 @@ function* addCategory(action) {
   yield put({ type: GET_CATEGORIES, payload: 1 });
   toast.success(response.message);
  } catch (error) {
-  toast.error(error.message);
+  const errorMessage = error.response.data.message || error.message;
+  toast.error(errorMessage);
   yield put({ type: CATEGORY_ERROR, payload: error.message });
  }
 }
