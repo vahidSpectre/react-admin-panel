@@ -101,12 +101,28 @@ export const getProducts = () => get(url.GET_PRODUCTS);
 export const getCategoriesUrl = page =>
  get(`${url.GET_CATEGORIES}?page=${page}`, page);
 
+export const showCategorysUrl = id => get(`${url.SHOW_CATEGORIES}/${id}`);
+
 export const addCategoryUrl = data => post(url.ADD_CATEGORIES, data);
 
 export const updateCategoryUrl = data =>
- patch(`${url.ADD_CATEGORIES}/${data.id}`, data);
+ patch(`${url.UPDATE_CATEGORIES}/${data.id}`, data);
 
-export const deleteCategoryUrl = data => del(`${url.ADD_CATEGORIES}`, data);
+export const deleteCategoryUrl = data => post(`${url.DELETE_CATEGORIES}`, data);
+
+// Measurements CRUD
+export const getMeasurementsUrl = (page=1) =>
+ get(`${url.GET_MEASUREMENT}?page=${page}`, page);
+
+export const showMeasurementUrl = id => get(`${url.SHOW_MEASUREMENT}/${id}`);
+
+export const addMeasurementUrl = data => post(url.ADD_MEASUREMENT, data);
+
+export const updateMeasurementUrl = data =>
+ patch(`${url.UPDATE_MEASUREMENT}/${data.id}`, data);
+
+export const deleteMeasurementsUrl = data =>
+ post(`${url.DELETE_MEASUREMENT}`, data);
 
 // get Product detail
 export const getProductDetail = id =>

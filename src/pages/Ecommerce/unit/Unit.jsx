@@ -21,30 +21,21 @@ import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import {
  getCategory,
+ getMeasurement,
  updateCategoryAction,
 } from '../../../store/e-commerce/actions';
 import Meta from '../Meta';
 
-const CategoryRow = ({ category, index, addToDeleteArray }) => {
- const categories = useSelector(state => state.ecommerce.categories.items);
- const categoryDetail = useSelector(state => state.ecommerce.category);
+const Unit = ({ category, index, addToDeleteArray }) => {
+ const units = useSelector(state => state.ecommerce.measurements.items);
+ const unitDetail = useSelector(state => state.ecommerce.measurement);
 
- const [createCategoryModalOpen, setCreateCategoryModalOpen] = useState(false);
+ const [createUnitModalOpen, setCreateUnitModalOpen] = useState(false);
  const [selectedFiles, setSelectedFiles] = useState([]);
  const [categoryOptions, setCategoryOptions] = useState([]);
  const [initialValues, setInitialValues] = useState({
-  name: categoryDetail.name || '',
-  slug: categoryDetail.slug || '',
-  is_active: categoryDetail.is_active || false,
-  productdesc: categoryDetail.description || '',
-  parents: categoryDetail.parents?.map(p => String(p.id)) || [],
-  unit: categoryDetail.unit || 0,
-  display_order: categoryDetail.display_order || 0,
-  meta: {
-   meta_keywords: categoryDetail.meta_keywords,
-   meta_description: categoryDetail.meta_description,
-   meta_title: categoryDetail.meta_title,
-  },
+  name: unitDetail.name || '',
+  symbol: unitDetail.slug || '',
  });
 
  const dispatch = useDispatch();
@@ -54,82 +45,37 @@ const CategoryRow = ({ category, index, addToDeleteArray }) => {
  }
 
  const formik = useFormik({
-  initialValues,
-  enableReinitialize: true,
+  initialValues: {
+   name: '',
+   symbol: '',
+  },
   validationSchema: yup.object().shape({
-   name: yup.string().required('لطفا نام محصول خود را وارد کنید'),
-   slug: yup.string(),
-   is_active: yup.boolean(),
-   productdesc: yup.string(),
-   unit: yup.number(),
-   parents: yup.array(),
-   display_order: yup.number(),
-   meta: yup.object().shape({
-    meta_keywords: yup.array(),
-    meta_description: yup.string(),
-    meta_title: yup.string(),
-    canonical: yup.string(),
-   }),
+   name: yup.string().required('لطفا نام واحد را وارد کنید'),
+   symbol: yup.string(),
   }),
   onSubmit: async values => {
-   const isMetaEmpty =
-    !values.meta.meta_title &&
-    !values.meta.meta_description &&
-    (!values.meta.meta_keywords || values.meta.meta_keywords.length === 0) &&
-    !values.meta.canonical;
-
-   const payload = {
-    name: values.name,
-    slug: values.slug,
-    description: values.productdesc,
-    parents: values.parents.map(Number),
-    is_active: values.is_active,
-    unit: Number(values.unit || 0),
-    display_order: Number(values.display_order),
-    id: values.id,
-    meta: isMetaEmpty
-     ? null
-     : {
-        meta_title: emptyToNull(values.meta.meta_title),
-        meta_description: emptyToNull(values.meta.meta_description),
-        meta_keywords: emptyToNull(values.meta.meta_keywords),
-        canonical: emptyToNull(values.meta.canonical),
-       },
-   };
-
-   console.log(values);
-
-   const currentValuesForCompare = {
-    ...initialValues,
-    parents: initialValues.parents.map(Number),
-   };
-
-   const updatedValuesForCompare = {
-    ...values,
-    parents: values.parents.map(Number),
-   };
-
-   if (isEqual(currentValuesForCompare, updatedValuesForCompare)) {
-    toast.info('هیچ تغییری اعمال نشده است.');
-    return;
-   }
    try {
-    dispatch(updateCategoryAction(payload));
-    setCreateCategoryModalOpen(false);
+    const payload = {
+     name: values.name,
+     symbol: values.symbol,
+    };
+    dispatch(addMeasurement(payload));
+
+    setCreateUnitModalOpen(false);
     formik.resetForm();
    } catch (error) {
-    console.error('خطا در ثبت دسته‌بندی:', error);
+    console.error('خطا در ثبت واحد:', error);
 
     const errorMessage =
      error?.response?.data?.message ||
      error?.message ||
-     'مشکلی در ثبت دسته‌بندی وجود دارد';
+     'مشکلی در ثبت واحد وجود دارد';
     toast.error(errorMessage);
    }
   },
  });
 
- const toggle = () => setCreateCategoryModalOpen(!createCategoryModalOpen);
+ const toggle = () => setCreateUnitModalOpen(!createUnitModalOpen);
 
  function formatBytes(bytes, decimals = 2) {
   if (bytes === 0) return '0 Bytes';
@@ -154,93 +100,28 @@ const CategoryRow = ({ category, index, addToDeleteArray }) => {
 
  useEffect(() => {
   console.log('first');
-  if (createCategoryModalOpen) {
-   dispatch(getCategory(category.id));
+  if (createUnitModalOpen) {
+   dispatch(getMeasurement(unit.id));
   }
-  if (categories) {
-   setCategoryOptions(
-    categories.map(category => ({
-     value: category.id,
-     label: category.name,
-    })),
-   );
-  }
- }, [categories, createCategoryModalOpen]);
+ }, [createUnitModalOpen]);
 
  useEffect(() => {
-  console.log(categoryDetail);
-  setInitialValues(categoryDetail);
- }, [categoryDetail]);
+  console.log(unitDetail);
+  setInitialValues(unitDetail);
+ }, [unitDetail]);
 
  useEffect(() => {
-  console.log('initialValues' , initialValues);
+  console.log('initialValues', initialValues);
  }, [initialValues]);
 
  return (
-  category && (
+  unit && (
    <tr>
     <td className='text-nowrap' scope='row'>
      {index}
     </td>
-    <td className='text-nowrap' scope='row'>
-     <Input
-      id='is_active'
-      name='is_active'
-      type='checkbox'
-      onChange={e => addToDeleteArray(e.target.checked, category.id)}
-     />
-    </td>
-    <td>{category.name}</td>
-    <td colSpan='1'> {category.display_order}</td>
-    <td colSpan='1'> {}</td>
-    <td colSpan='1'> {}</td>
-    <td colSpan='1'> {}</td>
-    <td colSpan='1'> {category.parent ? category.parent.name : '-'}</td>
-    <td colSpan='1'>
-     {category.is_active ? (
-      <Button
-       type='submit'
-       color='success'
-       className='w-100'
-       onClick={() => setCreateCategoryModalOpen(true)}>
-       فعال
-      </Button>
-     ) : (
-      <Button
-       type='submit'
-       color='danger'
-       className='w-100'
-       onClick={() => setCreateCategoryModalOpen(true)}>
-       غیر فعال
-      </Button>
-     )}
-    </td>
-    <td colSpan='1'>
-     {category.is_active ? (
-      <center>
-       <Button
-        type='submit'
-        color='success'
-        className='w-75 text-center'
-        onClick={() => setCreateCategoryModalOpen(true)}>
-        فعال
-       </Button>
-      </center>
-     ) : (
-      <center>
-       <Button
-        type='submit'
-        color='danger'
-        className='w-75 text-center'
-        onClick={() => setCreateCategoryModalOpen(true)}>
-        غیر فعال
-       </Button>
-      </center>
-     )}
-    </td>
-    <td colSpan='1'> {}</td>
-    <td colSpan='1'> {}</td>
-    <td colSpan='1'> {}</td>
+    <td>{unit.name}</td>
+    <td>{unit.symbol}</td>
     <td colSpan='1'>
      {
       <Row>
@@ -249,7 +130,7 @@ const CategoryRow = ({ category, index, addToDeleteArray }) => {
          type='submit'
          color='success'
          className='w-100'
-         onClick={() => setCreateCategoryModalOpen(true)}>
+         onClick={() => setCreateUnitModalOpen(true)}>
          مشاهده
         </Button>
        </Col> */}
@@ -258,7 +139,7 @@ const CategoryRow = ({ category, index, addToDeleteArray }) => {
          type='submit'
          color='primary'
          className='w-100'
-         onClick={() => setCreateCategoryModalOpen(true)}>
+         onClick={() => setCreateUnitModalOpen(true)}>
          ویرایش
         </Button>
        </Col>
@@ -268,7 +149,7 @@ const CategoryRow = ({ category, index, addToDeleteArray }) => {
     <OptionalSizes
      center={true}
      size={'xl'}
-     isOpen={createCategoryModalOpen}
+     isOpen={createUnitModalOpen}
      toggle={toggle}>
      <Container fluid>
       <Row>
@@ -522,7 +403,7 @@ const CategoryRow = ({ category, index, addToDeleteArray }) => {
             <Button
              type='button'
              color='secondary'
-             onClick={() => setCreateCategoryModalOpen(false)}>
+             onClick={() => setCreateUnitModalOpen(false)}>
              لغو
             </Button>
            </div>
@@ -538,4 +419,4 @@ const CategoryRow = ({ category, index, addToDeleteArray }) => {
  );
 };
 
-export default CategoryRow;
+export default Unit;

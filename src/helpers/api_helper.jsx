@@ -29,6 +29,7 @@ export async function post(url, data, config = {}) {
 }
 
 export async function patch(url, data, config = {}) {
+  console.log(url, data)
  return axiosApi
   .patch(url, { ...data }, { ...config })
   .then(response => response.data);

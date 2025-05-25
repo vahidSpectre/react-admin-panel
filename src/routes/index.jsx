@@ -175,6 +175,7 @@ import ContactsGrid from '../pages/Contacts/contacts-grid';
 import ContactsList from '../pages/Contacts/ContactList/contacts-list';
 import ContactsProfile from '../pages/Contacts/ContactsProfile/index';
 import UiProgressbar from '../pages/Ui/UiProgressbar';
+import Measurements from '../pages/Ecommerce/Measurements';
 // import UiProgressbar from "../../src/pages/Ui/UiProgressbar"
 
 const authProtectedRoutes = [
@@ -229,6 +230,7 @@ const authProtectedRoutes = [
  { path: '/ecommerce-discount-codes', component: <EcommerceOrders /> },
  { path: '/ecommerce-transaction-rewards', component: <EcommerceOrders /> },
  { path: '/ecommerce-installment-gateways', component: <EcommerceOrders /> },
+ { path: '/ecommerce-measurements', component: <Measurements /> },
  {
   path: '/ecommerce-return-policy-configuration',
   component: <EcommerceOrders />,

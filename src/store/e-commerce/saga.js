@@ -28,6 +28,11 @@ import {
  DELETE_CATEGORY_SUCCESS,
  CATEGORY_ERROR,
  GET_CATEGORIES_SUCCESS,
+ SHOW_CATEGORY,
+ GET_MEASUREMENTS,
+ ADD_MEASUREMENT,
+ UPDATE_MEASUREMENT,
+ DELETE_MEASUREMENT,
 } from './actionTypes';
 import {
  getCartDataFail,
@@ -67,6 +72,7 @@ import {
  onGetCategoriesSuccess,
  onAddCategoriesSuccess,
  updateCategoryAction,
+ onGetCategorySuccess,
 } from './actions';
 
 //Include Both Helper File with needed methods
@@ -92,11 +98,18 @@ import {
  updateCategoryUrl,
  addCategoryUrl,
  getCategoriesUrl,
+ showCategorysUrl,
+ getMeasurementsUrl,
+ showMeasurementUrl,
+ addMeasurementUrl,
+ updateMeasurementUrl,
+ deleteMeasurementsUrl,
 } from '../../helpers/fakebackend_helper';
 
 // toast
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { GET_MEASUREMENT } from '../../helpers/url_helper';
 
 function* fetchProducts() {
  try {
@@ -274,51 +287,136 @@ function* fetchCategories(action) {
   toast.success(response.message);
  } catch (error) {
   toast.error(error.message);
+  toast.error(error.response.data.message);
+  yield put({ type: CATEGORY_ERROR, payload: error.message });
+ }
+}
+
+function* showCategory(action) {
+ console.log(action);
+ try {
+  const response = yield call(showCategorysUrl, action.payload);
+  yield put(onGetCategorySuccess(response.data));
+  toast.success(response.message);
+ } catch (error) {
+  toast.error(error.message);
+  toast.error(error.response.data.message);
   yield put({ type: CATEGORY_ERROR, payload: error.message });
  }
 }
 
 function* addCategory(action) {
- try {
+
+    try {
   const response = yield call(addCategoryUrl, action.payload);
   yield put(onAddCategoriesSuccess(action.payload));
-  yield put({ type: GET_CATEGORIES, payload: 1 });
+  yield put({ type: GET_CATEGORIES, payload: action.payload });
   toast.success(response.message);
- } catch (error) {
-  const errorMessage = error.response.data.message || error.message;
-  toast.error(errorMessage);
-  yield put({ type: CATEGORY_ERROR, payload: error.message });
- }
-}
-
-function* updateCategory(action) {
- console.log(action.payload);
- try {
-  const response = yield call(updateCategoryUrl, action.payload);
-  toast.success(response.message);
-  yield put({ type: GET_CATEGORIES });
  } catch (error) {
   toast.error(error.message);
   yield put({ type: CATEGORY_ERROR, payload: error.message });
  }
 }
 
-function* deleteCategory(action) {
+function* updateCategory(action) {
+ console.log(action);
  try {
-  yield call(deleteCategoryUrl, action.payload);
-  yield put({ type: DELETE_CATEGORY_SUCCESS, payload: action.payload });
+  const response = yield call(updateCategoryUrl, action.payload);
+  toast.success(response.message);
   yield put({ type: GET_CATEGORIES });
  } catch (error) {
+  toast.error(error.message);
+  toast.error(error.response.data.message);
+  yield put({ type: CATEGORY_ERROR, payload: error.message });
+ }
+}
+
+function* deleteCategory(action) {
+ try {
+  const response = yield call(deleteCategoryUrl, action.payload);
+  yield put({ type: GET_CATEGORIES });
+  toast.success(response.message);
+ } catch (error) {
+  toast.error(error.message);
+  toast.error(error.response.data.message);
+  yield put({ type: CATEGORY_ERROR, payload: error.message });
+ }
+}
+
+function* fetchMeasurements(action) {
+ const page = action.payload || 1;
+ try {
+  const response = yield call(getMeasurementsUrl, page);
+  yield put(onGetCategoriesSuccess(response.data));
+  toast.success(response.message);
+ } catch (error) {
+  toast.error(error.message);
+  toast.error(error.response.data.message);
+  yield put({ type: CATEGORY_ERROR, payload: error.message });
+ }
+}
+
+function* showMeasurement(action) {
+ try {
+  const response = yield call(showMeasurementUrl, action.payload);
+  yield put(onGetCategorySuccess(response.data));
+  toast.success(response.message);
+ } catch (error) {
+  toast.error(error.message);
+  toast.error(error.response.data.message);
+  yield put({ type: CATEGORY_ERROR, payload: error.message });
+ }
+}
+
+function* addMeasurement(action) {
+ try {
+  const response = yield call(addMeasurementUrl, action.payload);
+  yield put(onAddCategoriesSuccess(action.payload));
+  yield put({ type: GET_MEASUREMENTS, payload: 1 });
+  toast.success(response.message);
+ } catch (error) {
+  toast.error(error.message);
+  toast.error(error.response.data.message);
+  yield put({ type: CATEGORY_ERROR, payload: error.message });
+ }
+}
+
+function* updateMeasurement(action) {
+ try {
+  const response = yield call(updateMeasurementUrl, action.payload);
+  toast.success(response.message);
+  yield put({ type: GET_MEASUREMENTS });
+ } catch (error) {
+  toast.error(error.message);
+  toast.error(error.response.data.message);
+  yield put({ type: CATEGORY_ERROR, payload: error.message });
+ }
+}
+
+function* deleteMeasurement(action) {
+ try {
+  const response = yield call(deleteMeasurementsUrl, action.payload);
+  yield put({ type: GET_MEASUREMENTS });
+  toast.success(response.message);
+ } catch (error) {
+  toast.error(error.message);
+  toast.error(error.response.data.message);
   yield put({ type: CATEGORY_ERROR, payload: error.message });
  }
 }
 
 function* ecommerceSaga() {
  yield takeEvery(GET_PRODUCTS, fetchProducts);
- yield takeLatest(GET_CATEGORIES, fetchCategories);
- yield takeLatest(ADD_CATEGORY, addCategory);
+ yield takeEvery(SHOW_CATEGORY, showCategory);
+ yield takeEvery(GET_CATEGORIES, fetchCategories);
+ yield takeEvery(ADD_CATEGORY, addCategory);
  yield takeEvery(UPDATE_CATEGORY, updateCategory);
  yield takeEvery(DELETE_CATEGORY, deleteCategory);
+ yield takeEvery(SHOW_CATEGORY, showMeasurement);
+ yield takeEvery(GET_MEASUREMENTS, fetchMeasurements);
+ yield takeEvery(ADD_MEASUREMENT, addMeasurement);
+ yield takeEvery(UPDATE_MEASUREMENT, updateMeasurement);
+ yield takeEvery(DELETE_MEASUREMENT, deleteMeasurement);
  yield takeEvery(GET_PRODUCT_DETAIL, fetchProductDetail);
  yield takeEvery(GET_ORDERS, fetchOrders);
  yield takeEvery(GET_CART_DATA, fetchCartData);
